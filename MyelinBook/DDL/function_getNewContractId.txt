@@ -1,0 +1,22 @@
+## tb_contract 테이블의 cort_id 생성 함수 
+## 2018.01.23
+## 이호경.
+
+CREATE FUNCTION tips.getNewContractId() RETURNS VARCHAR(12)
+
+BEGIN
+
+DECLARE result VARCHAR(12);
+SET result = null; 
+
+SELECT 
+  CASE WHEN max(cort_id) is null 
+  THEN concat(date_format(NOW(), '%Y%m%d'), '0001') 
+  ELSE concat(date_format(NOW(), '%Y%m%d'), lpad(CAST(right(max(cort_id), 4) AS UNSIGNED), 4, '0')) END
+  INTO result 
+FROM tb_contract 
+where left(cort_id, 8) = date_format(NOW(), '%Y%m%d') ;
+
+RETURN result;
+
+END 

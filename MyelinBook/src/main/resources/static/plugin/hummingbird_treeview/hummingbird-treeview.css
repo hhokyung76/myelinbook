@@ -1,0 +1,184 @@
+/*  
+ .hummingbird-treeview,
+.hummingbird-treeview *
+{
+    list-style: none;
+    font-size: 20px;
+    line-height: 24px;
+}
+
+.hummingbird-treeview label {
+    font-weight: normal;
+}
+
+
+.hummingbird-treeview input[type=checkbox] {
+    width : 16px;
+    height :16px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.hummingbird-treeview ul:not(.hummingbird-base) {
+    display: none;
+}
+
+.hummingbird-treeview .fa {
+    font-style: normal;
+    cursor: pointer;
+} 
+
+
+ */
+ 
+#treeview{
+	padding-left:15px;
+}
+#treeview,
+#treeview *
+{
+    list-style: none;
+    font-size: 15px;
+    line-height: 12px;
+	color:#333;
+}
+
+#treeview i{
+	font-size:15px;
+	line-height:18px;
+	margin-bottom:5px;
+}
+#treeview label {
+    font-weight: bold;
+}
+
+
+#treeview input[type=checkbox] {
+    width : 16px;
+    height :16px;
+    padding: 0px;
+    margin: 0px;
+}
+
+#treeview ul{
+	padding-left:20px;
+	margin-bottom:16px;
+}
+
+#treeview ul:not(.hummingbird-base) {
+    display: none;
+}
+
+#treeview .fa {
+    font-style: normal;
+    cursor: pointer;
+}
+
+
+
+#treeview li{
+	margin:7px 0;
+	font-size:15px;
+	font-weight:600;
+}
+
+#treeview input[type=checkbox]{
+    margin: 0px;
+	width:15px;height:15px;
+}
+
+span.tree_name{
+	height:15px;
+	display:inline-block;
+	padding-left:8px;
+}
+.pointer{
+	cursor:pointer;
+}
+
+
+
+
+#treeview input[type="checkbox"]{
+ display:none;
+}
+
+#treeview label>span{
+	display:inline-block;
+	width:19px;height:19px;
+}
+
+
+
+#treeview input[type="checkbox"] {
+    display:none;
+}
+#treeview label>input[type="checkbox"]+span {
+    display:inline-block;
+    width:19px;
+    height:19px;
+    margin:-3px -4px 0 0;
+    vertical-align:middle;
+    cursor:pointer;
+	background-size:90%;
+	background-repeat:no-repeat;
+	background-position:center center;
+}
+
+/* class_A 체크박스 */
+#treeview label>input.class_A[type="checkbox"]+span{
+	background-image:url(uncheck2.png);
+	
+}
+#treeview label>input.class_A[type="checkbox"]:checked + span{
+	background-image:url(check2.png);
+}
+#treeview label>input.class_A[type="checkbox"]:indeterminate + span{
+	background-image:url(indeterminate2.png);
+}
+
+/* class_B 체크박스 */
+#treeview label>input.class_B[type="checkbox"]+span{
+	background-image:url(uncheck1.png);
+}
+#treeview label>input.class_B[type="checkbox"]:checked + span{
+	background-image:url(check1.png);
+}
+#treeview label>input.class_B[type="checkbox"]:indeterminate + span{
+	background-image:url(indeterminate1.png);
+}
+
+
+span.check_sample{
+	 display:inline-block;
+    width:19px;
+    height:19px;
+    margin:-3px -4px 0 0;
+    vertical-align:middle;
+    cursor:pointer;
+	background-size:90%;
+	background-repeat:no-repeat;
+	
+	background-position:center center;
+}
+span.check_sample.red{
+	background-image:url(check2.png);
+}
+span.check_sample.blue{
+	background-image:url(check1.png);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

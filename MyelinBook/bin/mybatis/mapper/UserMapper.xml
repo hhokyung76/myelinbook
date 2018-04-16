@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.myelinbook.server.user.mapper.UserMapper">
+
+	<sql id="limitPage">
+		LIMIT #{startIndex}, #{pageListSize}
+	</sql>
+
+	<!-- 
+		모든 컬럼 
+	-->
+	<sql id="allColumn">
+		u.user_id
+		, u.pwd
+		, u.name
+		, u.type_cd
+		, u.mobile_no
+		, u.email_id
+		, u.email_addr_cd
+		, u.email_addr_nm
+		, u.appr_yn
+		, date_format(u.appr_dt, '%Y-%m-%d %T') appr_dt
+		, date_format(u.reg_dt, '%Y-%m-%d %T') reg_dt
+		, u.del_id
+		, date_format(u.del_dt, '%Y-%m-%d %T') del_dt
+		, SUBSTRING_INDEX(mobile_no, '-', 1) mobile_no1
+		, SUBSTRING_INDEX(SUBSTRING_INDEX(mobile_no, '-', 2), '-', -1) mobile_no2
+		, SUBSTRING_INDEX(mobile_no, '-', -1) mobile_no3
+	</sql>
+	
+	<sql id="whereCondition">
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(userId)">
+		AND u.user_id = #{userId}
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(pwd)">
+		AND u.pwd = PASSWORD(#{pwd})
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(name)">
+		AND u.name LIKE CONCAT('%', #{name},'%')
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(typeCd)">
+		AND u.type_cd = #{typeCd}
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(apprYn)">
+		AND u.appr_yn = #{apprYn}
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailId)">
+		AND u.email_id = #{emailId}
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailAddrNm)">
+		AND u.email_addr_nm = #{emailAddrNm}
+		</if>
+	</sql>
+	
+	<select id="count" resultType="int" parameterType="User">
+		SELECT COUNT(u.user_id)
+		FROM tb_user u
+		LEFT JOIN(SELECT c.code_id, c.code_name
+					FROM tb_code c
+					WHERE c.code_group_id = 'USER_TYPE_CD') a ON u.type_cd = a.code_id
+		LEFT JOIN(SELECT c.code_id, c.code_name
+					FROM tb_code c
+					WHERE c.code_group_id = 'EMAIL_ADDRESS_CD') b ON u.email_addr_cd = b.code_id
+		WHERE del_id is not null
+		<include refid="whereCondition"/>
+	</select>
+	
+	<select id="list" resultType="User" parameterType="User">
+		SELECT
+			<include refid="allColumn"/>
+		FROM tb_user u
+		LEFT JOIN(SELECT c.code_id, c.code_name
+					FROM tb_code c
+					WHERE c.code_group_id = 'USER_TYPE_CD') a ON u.type_cd = a.code_id
+		LEFT JOIN(SELECT c.code_id, c.code_name
+					FROM tb_code c
+					WHERE c.code_group_id = 'EMAIL_ADDRESS_CD') b ON u.email_addr_cd = b.code_id
+		WHERE del_id is not null
+		<include refid="whereCondition"/>
+		
+		<choose>
+		<when test="@org.apache.commons.lang3.StringUtils@isNotEmpty(sortOrder)">
+			<choose>
+				<when test="@org.springframework.util.StringUtils@equals(sortOrder, 'name')">
+					ORDER BY u.name ASC, u.reg_dt DESC
+				</when>
+				<otherwise>
+					ORDER BY u.reg_dt DESC
+				</otherwise>
+			</choose>
+		</when>
+		<otherwise>
+			ORDER BY u.reg_dt DESC
+		</otherwise>
+		</choose>
+		
+		<if test="totListSize gt 0">
+			<include refid="limitPage"/>
+		</if>
+	</select>
+	
+	<select id="get" resultType="User" parameterType="User">
+		SELECT
+			<include refid="allColumn"/>
+		FROM
+			tb_user u
+		LEFT JOIN(SELECT c.code_id, c.code_name
+					FROM tb_code c
+					WHERE c.code_group_id = 'USER_TYPE_CD') a ON u.type_cd = a.code_id
+		LEFT JOIN(SELECT c.code_id, c.code_name
+					FROM tb_code c
+					WHERE c.code_group_id = 'EMAIL_ADDRESS_CD') b ON u.email_addr_cd = b.code_id
+		WHERE
+		<trim prefixOverrides="AND">
+			<include refid="whereCondition"/>
+		</trim>
+	</select>
+	
+	<!-- 
+		사용자 추가
+	-->	
+	<insert id="add" parameterType="User">
+		INSERT INTO tb_user
+		(
+			user_id
+			, pwd
+			, name
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(mobileNo)">
+			, mobile_no
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailId)">
+			, email_id
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailAddrCd)">
+			, email_addr_cd
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailAddrNm)">
+			, email_addr_nm
+			</if>
+			, reg_dt
+		)
+		VALUES
+		(
+			#{userId}
+			, PASSWORD(#{pwd})
+			, #{name}
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(mobileNo)">
+			, #{mobileNo}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailId)">
+			, #{emailId}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailAddrCd)">
+			, #{emailAddrCd}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailAddrNm)">
+			, #{emailAddrNm}
+			</if>
+			, NOW() <!-- regDt -->
+		)
+	</insert>
+	
+	<!-- 
+		수정 
+	-->
+	<update id="mod" parameterType="User">
+		UPDATE
+			tb_user
+		SET
+			<trim prefixOverrides=",">
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(pwd)">
+				, pwd = #{pwd}
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(name)">
+				, name = #{name}
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(typeCd)">
+				, type_cd = #{typeCd}
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(mobileNo)">
+				, mobile_no = #{mobileNo}
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailId)">
+				, email_id = #{emailId}
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailAddrCd)">
+				, email_addr_cd = #{emailAddrCd}
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(apprYn)">
+				, appr_yn = #{apprYn}
+				, appr_dt = NOW()
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(delId)">
+				, del_id = #{delId}
+				, del_dt = NOW()
+				</if>
+			</trim>
+		WHERE
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(userId)">
+			user_id = #{userId}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(userIds)">
+			user_id IN
+				<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+	</update>
+	
+</mapper>

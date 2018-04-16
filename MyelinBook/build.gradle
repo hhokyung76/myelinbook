@@ -1,0 +1,88 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.9.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'war'
+
+group = 'com.mediaflow.tips'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+configurations {
+	providedRuntime
+}
+
+dependencies {
+	compile('org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.1')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	runtime('mysql:mysql-connector-java')
+	// https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
+	compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.2.1'
+	
+	compile('org.apache.commons:commons-lang3:3.6')
+	
+	// jsp
+	compile("javax.servlet:jstl")
+	compile("org.apache.tomcat.embed:tomcat-embed-jasper")
+	
+	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+	//compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '1.5.9.RELEASE'
+	
+	// https://mvnrepository.com/artifact/org.springframework.session/spring-session
+	compile group: 'org.springframework.session', name: 'spring-session', version: '1.3.1.RELEASE'
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-redis
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-redis', version: '1.3.8.RELEASE'
+	
+	// https://mvnrepository.com/artifact/com.google.code.gson/gson
+	compile group: 'com.google.code.gson', name: 'gson', version: '2.8.2'
+	// https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl
+	compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: '1.9.13'
+	// https://mvnrepository.com/artifact/commons-io/commons-io
+	compile group: 'commons-io', name: 'commons-io', version: '2.5'
+	// https://mvnrepository.com/artifact/org.projectlombok/lombok
+	compile group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+	// https://mvnrepository.com/artifact/eu.bitwalker/UserAgentUtils
+	compile group: 'eu.bitwalker', name: 'UserAgentUtils', version: '1.20'
+	// https://mvnrepository.com/artifact/net.coobird/thumbnailator
+	compile group: 'net.coobird', name: 'thumbnailator', version: '0.4.8'
+	
+	
+	compile("org.apache.hive:hive-exec:2.2.0")
+	
+	compile("org.apache.calcite:calcite-core:1.10.0")
+	// https://mvnrepository.com/artifact/org.apache.hive.hcatalog/hive-hcatalog-core
+	compile group: 'org.apache.hive.hcatalog', name: 'hive-hcatalog-core', version: '2.2.0'
+	
+	// https://mvnrepository.com/artifact/org.apache.hive.hcatalog/hive-webhcat-java-client
+	compile group: 'org.apache.hive.hcatalog', name: 'hive-webhcat-java-client', version: '2.2.0'
+	
+	// https://mvnrepository.com/artifact/com.rabbitmq/amqp-client// https://mvnrepository.com/artifact/com.rabbitmq/amqp-client
+	compile group: 'com.rabbitmq', name: 'amqp-client', version: '3.5.7'
+
+    // https://mvnrepository.com/artifact/io.vertx/vertx-core
+	compile group: 'io.vertx', name: 'vertx-core', version: '3.5.1'
+	// https://mvnrepository.com/artifact/io.vertx/vertx-web
+	compile group: 'io.vertx', name: 'vertx-web', version: '3.5.1'
+	// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.1.1'
+	
+	
+	
+}

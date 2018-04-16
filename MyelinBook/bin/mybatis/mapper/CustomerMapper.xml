@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.myelinbook.server.customer.mapper.CustomerMapper">
+
+	<sql id="limitPage">
+		LIMIT #{startIndex}, #{pageListSize}
+	</sql>
+
+	<!-- 
+		모든 컬럼 
+	-->
+	<sql id="allColumn">		
+		 c.cust_id
+		 , c.cust_nm
+		 , c.chrg_nm
+		 , c.coct_no
+		 , c.email_id
+		 , c.email_addr_cd
+		 , case when b.code_name is null then c.email_addr_nm else b.code_name end email_addr_nm
+		 , concat(c.email_id, '@', c.email_addr_nm) email_full
+		 , c.reg_id
+		 , date_format(c.reg_dt, '%Y-%m-%d %T') reg_dt
+		 , c.upt_id
+		 , date_format(c.upt_dt, '%Y-%m-%d %T') upt_dt
+		 , c.del_id
+		 , date_format(c.del_dt, '%Y-%m-%d %T') del_dt
+		, SUBSTRING_INDEX(c.coct_no, '-', 1) coct_no1
+		, SUBSTRING_INDEX(SUBSTRING_INDEX(c.coct_no, '-', 2), '-', -1) coct_no2
+		, SUBSTRING_INDEX(c.coct_no, '-', -1) coct_no3
+	</sql>
+	
+	<sql id="whereCondition">
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(custId)">
+		AND c.cust_id = #{custId}
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(custNm)">
+		AND c.cust_nm LIKE CONCAT('%', #{custNm},'%')
+		</if>
+	</sql>
+	
+	<select id="count" resultType="int" parameterType="Customer">
+		SELECT COUNT(*)
+		FROM tb_customer c
+		WHERE IFNULL(del_id, '') = ''
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(custNm)">
+		AND c.cust_nm LIKE CONCAT('%', #{custNm},'%')
+		</if>
+	</select>
+	
+	<select id="list" resultType="Customer" parameterType="Customer">
+		SELECT
+			<include refid="allColumn"/>
+		FROM tb_customer c
+		LEFT JOIN(SELECT c.code_id, c.code_name
+					FROM tb_code c
+					WHERE c.code_group_id = 'EMAIL_ADDRESS_CD') b ON c.email_addr_cd = b.code_id
+		WHERE IFNULL(del_id, '') = ''
+		
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(custNm)">
+		AND c.cust_nm LIKE CONCAT('%', #{custNm},'%')
+		</if>
+		
+		ORDER BY c.reg_dt DESC
+		
+		
+		<if test="pageListSize gt 0">
+			<include refid="limitPage"/>
+		</if>
+	</select>
+	
+	<select id="popList" resultType="Customer" parameterType="Customer">
+		SELECT
+			<include refid="allColumn"/>
+		FROM tb_customer c
+		LEFT JOIN(SELECT c.code_id, c.code_name
+					FROM tb_code c
+					WHERE c.code_group_id = 'EMAIL_ADDRESS_CD') b ON c.email_addr_cd = b.code_id
+		WHERE IFNULL(del_id, '') = ''
+		
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(custNm)">
+		AND c.cust_nm LIKE CONCAT('%', #{custNm},'%')
+		</if>
+		
+		ORDER BY c.reg_dt DESC		
+		
+	</select>
+	
+	<select id="get" resultType="Customer" parameterType="Customer">
+		SELECT
+			<include refid="allColumn"/>
+		FROM tb_customer c
+		LEFT JOIN(SELECT c.code_id, c.code_name
+					FROM tb_code c
+					WHERE c.code_group_id = 'EMAIL_ADDRESS_CD') b ON c.email_addr_cd = b.code_id
+		WHERE IFNULL(del_id, '') = ''
+		<trim prefixOverrides="AND">
+			<include refid="whereCondition"/>
+		</trim>
+	</select>
+	
+	
+	<!--
+		사용자 추가 시 이메일 중복 체크 
+	 -->
+	<select id="countEmail" resultType="int" parameterType="Customer">
+		SELECT COUNT(*)
+		FROM tb_customer c
+		WHERE IFNULL(del_id, '') = ''
+		<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailId)">
+		AND CONCAT(c.email_id, '@', c.email_addr_nm)  = CONCAT(#{emailId}, '@', #{emailAddrNm})
+		</if>
+	</select>
+	
+	<!-- 
+		사용자 추가
+	-->	
+	<insert id="add" parameterType="Customer">
+		INSERT INTO tb_customer
+		(
+			cust_id
+			, cust_nm
+			, chrg_nm
+			, coct_no
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailId)">
+			, email_id
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailAddrCd)">
+			, email_addr_cd
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailAddrNm)">
+			, email_addr_nm
+			</if>
+			, reg_id
+			, reg_dt
+		)
+		VALUES
+		(
+			#{custId}
+			, #{custNm}
+			, #{chrgNm}
+			, #{coctNo}
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailId)">
+			, #{emailId}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailAddrCd)">
+			, #{emailAddrCd}
+			</if>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailAddrNm)">
+			, #{emailAddrNm}
+			</if>
+			, #{regId}
+			, NOW() <!-- regDt -->
+		)
+	</insert>
+	
+	<!-- 
+		수정 
+	-->
+	<update id="mod" parameterType="Customer">
+		UPDATE
+			tb_customer
+		SET
+			<trim prefixOverrides=",">				
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(custNm)">
+				, cust_nm = #{custNm}
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(chrgNm)">
+				, chrg_nm = #{chrgNm}
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(coctNo)">
+				, coct_no = #{coctNo}
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailId)">
+				, email_id = #{emailId}
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailAddrNm)">
+				, email_addr_nm = #{emailAddrNm}
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(emailAddrCd)">
+				, email_addr_cd = #{emailAddrCd}
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(uptId)">
+				, upt_id = #{uptId}
+				, upt_dt = NOW()
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(delId)">
+				, del_id = #{delId}
+				, del_dt = NOW()
+				</if>
+			</trim>
+		WHERE
+			cust_id = #{custId}
+	</update>
+	
+</mapper>
