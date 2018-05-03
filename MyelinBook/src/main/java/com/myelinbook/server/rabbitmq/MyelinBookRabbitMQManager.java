@@ -1,4 +1,4 @@
-package com.mediaflow.tips.server.rabbitmq;
+package com.myelinbook.server.rabbitmq;
 
 
 //import static com.mediaflow.configuration.Constants.*;
@@ -17,21 +17,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.mediaflow.tips.server.message.queue.TipsQueueManager;
-import com.mediaflow.tips.server.rabbitmq.worker.RabbitImageDataReceiver;
-import com.mediaflow.tips.server.thread.manager.TipsServerPoolManager;
-import com.mediaflow.tips.utils.NetworkUtils;
+import com.myelinbook.server.message.queue.MyelinBookQueueManager;
+import com.myelinbook.server.rabbitmq.worker.RabbitImageDataReceiver;
+import com.myelinbook.server.thread.manager.MyelinBookServerPoolManager;
+import com.myelinbook.server.utils.NetworkUtils;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
 @Component
-public class TipsImageServerRabbitMQManager {
+public class MyelinBookRabbitMQManager {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
-	private TipsQueueManager tipsQueueManager;
+	private MyelinBookQueueManager tipsQueueManager;
 	@Autowired
-	private TipsServerPoolManager tinyServerPoolManager;
+	private MyelinBookServerPoolManager tinyServerPoolManager;
 
 	@Autowired
 	private ApplicationContext context;
@@ -71,7 +71,7 @@ public class TipsImageServerRabbitMQManager {
 
 	}
 
-	public TipsImageServerRabbitMQManager() {
+	public MyelinBookRabbitMQManager() {
 		
 	}
 	

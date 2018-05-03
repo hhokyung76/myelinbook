@@ -31,6 +31,10 @@ dependencies {
 	compile('org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.1')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	runtime('mysql:mysql-connector-java')
+	
+	compile fileTree(dir: 'libs', include: ['*.jar'])
+
+	
 	// https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
 	compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.2.1'
 	
@@ -42,6 +46,9 @@ dependencies {
 	
 	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+	// https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlet
+	compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.6.v20170531'
+	
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
 	//compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '1.5.9.RELEASE'
 	
@@ -63,16 +70,6 @@ dependencies {
 	// https://mvnrepository.com/artifact/net.coobird/thumbnailator
 	compile group: 'net.coobird', name: 'thumbnailator', version: '0.4.8'
 	
-	
-	compile("org.apache.hive:hive-exec:2.2.0")
-	
-	compile("org.apache.calcite:calcite-core:1.10.0")
-	// https://mvnrepository.com/artifact/org.apache.hive.hcatalog/hive-hcatalog-core
-	compile group: 'org.apache.hive.hcatalog', name: 'hive-hcatalog-core', version: '2.2.0'
-	
-	// https://mvnrepository.com/artifact/org.apache.hive.hcatalog/hive-webhcat-java-client
-	compile group: 'org.apache.hive.hcatalog', name: 'hive-webhcat-java-client', version: '2.2.0'
-	
 	// https://mvnrepository.com/artifact/com.rabbitmq/amqp-client// https://mvnrepository.com/artifact/com.rabbitmq/amqp-client
 	compile group: 'com.rabbitmq', name: 'amqp-client', version: '3.5.7'
 
@@ -82,6 +79,8 @@ dependencies {
 	compile group: 'io.vertx', name: 'vertx-web', version: '3.5.1'
 	// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
 	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.1.1'
+	
+	compile group: 'org.apache.clerezza.ext', name: 'org.json.simple', version: '0.4'
 	
 	
 	

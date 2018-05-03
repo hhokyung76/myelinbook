@@ -2,7 +2,6 @@ package com.myelinbook.server.frontx.server;
 
 
 
-import static com.mediaflow.tips.common.Constants.*;
 import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
@@ -12,37 +11,36 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.mediaflow.tips.server.message.processor.TipsDataProcessorImpl;
-import com.mediaflow.tips.server.message.queue.TipsQueueManager;
-import com.mediaflow.tips.server.rabbitmq.TipsImageServerRabbitMQManager;
-import com.mediaflow.tips.server.thread.manager.TipsServerPoolManager;
-import com.mediaflow.tips.server.vertx.TipsImageServerVerticle;
+import com.myelinbook.server.message.queue.MyelinBookQueueManager;
+import com.myelinbook.server.rabbitmq.MyelinBookRabbitMQManager;
+import com.myelinbook.server.thread.manager.MyelinBookServerPoolManager;
+import com.myelinbook.server.frontx.vertx.MyelinBookServerVerticle;
 
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 
 @Component
-public class MyelinFrontServerDaemon {
-	private static final Logger log = LoggerFactory.getLogger(MyelinFrontServerDaemon.class);
+public class MyelinBookServerDaemon {
+	private static final Logger log = LoggerFactory.getLogger(MyelinBookServerDaemon.class);
 
-	@Value("${tipsimg.repository.path}")
+	//@Value("${tipsimg.repository.path}")
     private String imgPath;
 	
 	@Autowired
 	private ApplicationContext context;
 	
 	@Autowired
-	private TipsQueueManager tipsQueueManager;
+	private MyelinBookQueueManager myelinBookQueueManager;
 	@Autowired
-	private TipsImageServerRabbitMQManager tipsImageServerRabbitMQManager;
+	private MyelinBookRabbitMQManager myelinBookRabbitMQManager;
 	@Autowired
-	private TipsServerPoolManager tipsServerPoolManager;
+	private MyelinBookServerPoolManager myelinBookServerPoolManager;
 	
 
-	@Value("${tipsimg.ftp.repository.path}")
+	//@Value("${tipsimg.ftp.repository.path}")
 	private String tipsImageFtpPath;
 
-	@Value("${tipsimg.repository.path}")
+	//@Value("${tipsimg.repository.path}")
 	private String tipsImagePath;
 	
 	@PreDestroy
@@ -53,12 +51,17 @@ public class MyelinFrontServerDaemon {
 	
 	
 	public void startAll() throws Exception {
-		log.info("TinyFarmerQueueManager size: "+tipsQueueManager.getQueueMap().size());
+		log.info("myelinBookQueueManager size: "+myelinBookQueueManager.getQueueMap().size());
 
 	    Vertx vertx = Vertx.vertx();
-	    TipsImageServerVerticle tipsImageVerticle = new TipsImageServerVerticle(); 
-	    tipsImageVerticle.setSpringContext(context, tipsImageFtpPath, tipsImagePath);
-	    vertx.deployVerticle(tipsImageVerticle);
+	    MyelinBookServerVerticle bookVerticle = new MyelinBookServerVerticle(); 
+	    bookVerticle.setSpringContext(context, tipsImageFtpPath, tipsImagePath);
+	    
+
+	    MyelinBookServerVerticle bookVerticle2 = new MyelinBookServerVerticle(); 
+	    bookVerticle2.setSpringContext(context, tipsImageFtpPath, tipsImagePath);
+	    vertx.deployVerticle(bookVerticle);
+	    vertx.deployVerticle(bookVerticle2);
 		
 //		tipsQueueManager.statusQueues();
 //		

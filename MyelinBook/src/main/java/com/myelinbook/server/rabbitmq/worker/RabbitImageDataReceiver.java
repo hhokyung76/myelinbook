@@ -1,4 +1,4 @@
-package com.mediaflow.tips.server.rabbitmq.worker;
+package com.myelinbook.server.rabbitmq.worker;
 
 
 
@@ -20,9 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.mediaflow.tips.common.Constants;
-import com.mediaflow.tips.server.message.entity.TipsImgData;
-import com.mediaflow.tips.server.message.queue.TipsQueueManager;
+import com.myelinbook.server.message.queue.MyelinBookQueueManager;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -47,7 +45,7 @@ public class RabbitImageDataReceiver implements Runnable {
 
 	private Channel rabbitChannel = null;
 
-    private TipsQueueManager tipsQueueManager; // hub -> cloud
+    private MyelinBookQueueManager tipsQueueManager; // hub -> cloud
 	
 	private String hubId;
 	
@@ -59,12 +57,12 @@ public class RabbitImageDataReceiver implements Runnable {
 	}
 
 	
-	public TipsQueueManager getTipsQueueManager() {
+	public MyelinBookQueueManager getTipsQueueManager() {
 		return tipsQueueManager;
 	}
 
 
-	public void setTipsQueueManager(TipsQueueManager tipsQueueManager) {
+	public void setTipsQueueManager(MyelinBookQueueManager tipsQueueManager) {
 		this.tipsQueueManager = tipsQueueManager;
 	}
 
@@ -76,7 +74,7 @@ public class RabbitImageDataReceiver implements Runnable {
 		try {
 			rabbitChannel = rabbitMQConn.createChannel();
 
-			rabbitChannel.queueDeclare(Constants.QUEUE_READ_IMG, true, false, false, null);
+			rabbitChannel.queueDeclare("test", true, false, false, null);
 
 			Consumer consumer = new DefaultConsumer(rabbitChannel) {
 		      @Override
@@ -85,12 +83,11 @@ public class RabbitImageDataReceiver implements Runnable {
 		        String message = new String(body, "UTF-8");
 		        
 
-				TipsImgData imgData = gson.fromJson(message, TipsImgData.class);
+				Object imgData = gson.fromJson(message, Object.class);
 				log.info("imgData: "+imgData.toString());
-				String fileFlag = imgData.getFileFlag();
 				
 				try {
-					tipsQueueManager.getQueueByName(fileFlag).put(imgData);
+					tipsQueueManager.getQueueByName("test").put(imgData);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -104,7 +101,7 @@ public class RabbitImageDataReceiver implements Runnable {
 		        log.info(" [x] Received '" + envelope.getRoutingKey() + "':'" + message + "'");
 		      }
 		    };
-			rabbitChannel.basicConsume(Constants.QUEUE_READ_IMG, true, consumer);
+			rabbitChannel.basicConsume("test", true, consumer);
 
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
